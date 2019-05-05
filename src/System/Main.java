@@ -8,10 +8,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main extends Application {
@@ -25,37 +31,53 @@ public class Main extends Application {
     }
 
     public void start(Stage primaryStage) throws Exception{
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         window = primaryStage;
 
 
         // Main Menu
-        HBox mainMenuLayout = new HBox();
+        VBox mainMenuLayout = new VBox();
         Button cameraAppOption = new Button("Camera App");
+        Button closeWindow = new Button("Close Window");
         cameraAppOption.setOnAction(event -> cameraApp());
-        mainMenuLayout.getChildren().addAll(cameraAppOption);
+        closeWindow.setOnAction(event -> closeProgram());
+        mainMenuLayout.getChildren().addAll(cameraAppOption, closeWindow);
         mainMenuLayout.setAlignment(Pos.CENTER);
         mainMenu = new Scene(mainMenuLayout, 1280,720);
 
         //Start window
         window.setScene(mainMenu);
-        window.setTitle("Alpha build 0.1");
+        window.setTitle("Alpha build 0.11");
         window.show();
         window.setMaximized(true);
     }
 
-    public void goToMainMenu() {
+
+    //Temporary Close Button
+    private void closeProgram(){
+        Boolean answer = ConfirmationBox.display("Temporary Close","Do you want to exit?");
+        if(answer == true){
+            window.close();
+        }
 
     }
 
+
+
+    //Camera App
     public void cameraApp(){
+
+        //Turning on Camera
         System.out.println("Camera app loaded.");
         Webcam webcam = Webcam.getDefault();
         webcam.setViewSize(WebcamResolution.VGA.getSize());
 
+        //Camera Settings
         WebcamPanel panel = new WebcamPanel(webcam);
         panel.setFPSDisplayed(true);
         panel.isMirrored();
 
+        // Window
         JFrame cameraWindow = new JFrame("Camera App");
         cameraWindow.add(panel);
         cameraWindow.setResizable(true);
@@ -65,17 +87,26 @@ public class Main extends Application {
         cameraWindow.setVisible(true);
         cameraWindow.show();
 
+        JButton cameraPicture = new JButton("Take photo");
+
         JFrame cameraOptions = new JFrame("Camera Tools");
-        cameraOptions.add(closeApp);
+        cameraOptions.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        cameraOptions.setBounds(0,0,200,200);
+        JPanel cameraButtonLayout = new JPanel();
+        cameraButtonLayout.add(cameraPicture);
+        cameraButtonLayout.add(closeApp);
+        cameraOptions.add(cameraButtonLayout);
         cameraOptions.setLocationRelativeTo(null);
         cameraOptions.pack();
         cameraOptions.setVisible(true);
 
+
+
+        // Return to main menu
         closeApp.addActionListener(e -> {
             cameraWindow.setVisible(false);
             cameraOptions.setVisible(false);
             webcam.close();
-            goToMainMenu();
         });
     }
 }
