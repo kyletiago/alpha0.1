@@ -25,6 +25,7 @@ public class Main extends Application {
     Stage window;
     Scene mainMenu;
     JButton closeApp = new JButton("Close App");
+    Webcam webcam = Webcam.getDefault();
 
     public static void main(String[] args){
         launch(args);
@@ -39,7 +40,13 @@ public class Main extends Application {
         VBox mainMenuLayout = new VBox();
         Button cameraAppOption = new Button("Camera App");
         Button closeWindow = new Button("Close Window");
-        cameraAppOption.setOnAction(event -> cameraApp());
+        cameraAppOption.setOnAction(event -> {
+            try {
+                cameraApp();
+            } catch (IOException e) {
+                System.out.print("error launching camera app"); //replace with alert box soon
+            }
+        });
         closeWindow.setOnAction(event -> closeProgram());
         mainMenuLayout.getChildren().addAll(cameraAppOption, closeWindow);
         mainMenuLayout.setAlignment(Pos.CENTER);
@@ -47,7 +54,7 @@ public class Main extends Application {
 
         //Start window
         window.setScene(mainMenu);
-        window.setTitle("Alpha build 0.11");
+        window.setTitle("Alpha build 0.12");
         window.show();
         window.setMaximized(true);
     }
@@ -65,12 +72,12 @@ public class Main extends Application {
 
 
     //Camera App
-    public void cameraApp(){
+    public void cameraApp() throws IOException{
 
         //Turning on Camera
         System.out.println("Camera app loaded.");
-        Webcam webcam = Webcam.getDefault();
         webcam.setViewSize(WebcamResolution.VGA.getSize());
+        webcam.open();
 
         //Camera Settings
         WebcamPanel panel = new WebcamPanel(webcam);
@@ -88,6 +95,13 @@ public class Main extends Application {
         cameraWindow.show();
 
         JButton cameraPicture = new JButton("Take photo");
+        cameraPicture.addActionListener(e -> {
+            try {
+                takePhoto();
+            } catch (IOException e1) {
+                System.out.print("error taking photo"); //add alert box here soon
+            }
+        });
 
         JFrame cameraOptions = new JFrame("Camera Tools");
         cameraOptions.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,7 +115,6 @@ public class Main extends Application {
         cameraOptions.setVisible(true);
 
 
-
         // Return to main menu
         closeApp.addActionListener(e -> {
             cameraWindow.setVisible(false);
@@ -109,4 +122,10 @@ public class Main extends Application {
             webcam.close();
         });
     }
+
+    // Take photo
+    private void takePhoto() throws IOException{
+        ImageIO.write(webcam.getImage(), "JPG", new File("test.jpg"));
+    }
+
 }
