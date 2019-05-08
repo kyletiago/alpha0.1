@@ -18,6 +18,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main extends Application {
@@ -26,6 +31,9 @@ public class Main extends Application {
     Scene mainMenu;
     JButton closeApp = new JButton("Close App");
     Webcam webcam = Webcam.getDefault();
+    Date date = Calendar.getInstance().getTime();
+    DateFormat dateFormat = new SimpleDateFormat("yyyymmddhhmmss");
+    String strDate = dateFormat.format(date);
 
     public static void main(String[] args){
         launch(args);
@@ -64,7 +72,8 @@ public class Main extends Application {
     private void closeProgram(){
         Boolean answer = ConfirmationBox.display("Temporary Close","Do you want to exit?");
         if(answer == true){
-            window.close();
+            System.out.print("Shutting down");
+            System.exit(0);
         }
 
     }
@@ -105,7 +114,7 @@ public class Main extends Application {
 
         JFrame cameraOptions = new JFrame("Camera Tools");
         cameraOptions.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        cameraOptions.setBounds(0,0,200,200);
+        cameraOptions.setBounds(0,0,200,500);
         JPanel cameraButtonLayout = new JPanel();
         cameraButtonLayout.add(cameraPicture);
         cameraButtonLayout.add(closeApp);
@@ -125,7 +134,9 @@ public class Main extends Application {
 
     // Take photo
     private void takePhoto() throws IOException{
-        ImageIO.write(webcam.getImage(), "JPG", new File("test.jpg"));
+
+        ImageIO.write(webcam.getImage(), "JPG", new File("gallery\\"+ System.currentTimeMillis() +".jpg"));
+
     }
 
 }
